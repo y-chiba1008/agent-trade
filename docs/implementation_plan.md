@@ -16,18 +16,9 @@
 - [ ] FastAPIの最小構成（`GET /health` 等）
 - [ ] PostgreSQLのセットアップ（ローカルDocker等）
 - [ ] DBマイグレーションツールの選定・導入（Alembic推奨）
-- [ ] プロジェクトのディレクトリ構成決定（サービス層・WebAPI層・MCP層を分離する構成を意識する）
+- [ ] Alembicのマイグレーションパス設定を、ディレクトリ構成（`db/migrations/`）に合わせて調整する
 
-```
-backend/
-  app/
-    api/          # FastAPIのルーター（WebAPI層）
-    mcp/          # MCPサーバ実装（MCP層）
-    services/     # ビジネスロジック（サービス層）※API/MCP両方から呼ばれる
-    models/       # DBモデル
-    adapters/     # 価格データソースのアダプタ（取引所ごとの実装を抽象化）
-    db/           # DB接続・マイグレーション
-```
+プロジェクトのディレクトリ構成（usecase層・WebAPI層・MCP層の分離、backend/frontend両方）は決定済み。詳細は [`docs/architecture.md`](./architecture.md) を参照。
 
 **検証方法**: `uvicorn`でサーバ起動 → `/health`にアクセスして200が返る。DBにテーブルが1つ作れる。
 
@@ -46,12 +37,12 @@ backend/
 
 ### 1-2. デモ口座管理
 - [ ] 口座テーブルの設計・マイグレーション（`accounts`: id, name, balance, created_at等）
-- [ ] 口座作成・削除・一覧取得のサービス関数
+- [ ] 口座作成・削除・一覧取得のusecase（`*_usecase.py`）
 - [ ] WebAPI: `POST /accounts`, `DELETE /accounts/{id}`, `GET /accounts`
 
 ### 1-3. 注文・約定（成行のみ）
 - [ ] 注文テーブル・約定テーブルの設計・マイグレーション（`orders`, `executions`）
-- [ ] 成行注文受付 → 即時約定 → 残高・ポジション更新のサービス関数
+- [ ] 成行注文受付 → 即時約定 → 残高・ポジション更新のusecase（`*_usecase.py`）
 - [ ] WebAPI: `POST /accounts/{id}/orders`（成行注文）, `GET /accounts/{id}/orders`, `GET /accounts/{id}/executions`
 - [ ] WebAPI: `GET /price/BTC_JPY`（現在価格取得）
 
@@ -64,6 +55,9 @@ backend/
 **ゴール**: ブラウザから価格確認・成行注文ができ、AIからもMCP経由で同じ操作ができる。
 
 ### 2-1. フロントエンド最小実装
+
+ディレクトリ構成（Package by Feature、命名規則）は決定済み。詳細は [`docs/architecture.md`](./architecture.md) を参照。
+
 - [ ] Vite + React のプロジェクトセットアップ
 - [ ] shadcn/ui の導入（base UIコンポーネント）
 - [ ] TanStack Query の導入・APIクライアントのセットアップ
@@ -79,7 +73,7 @@ backend/
 - [ ] MCPツール: `get_price`（現在価格取得）
 - [ ] MCPツール: `get_account`（口座情報取得）
 - [ ] MCPツール: `place_market_order`（成行注文）
-- [ ] MCP層はサービス層を呼ぶだけの薄いラッパーとして実装（Phase 1で作ったサービス関数を再利用）
+- [ ] MCP層はusecase層を呼ぶだけの薄いラッパーとして実装（Phase 1で作ったusecaseを再利用）
 
 **検証方法**: ブラウザで価格を見ながら成行注文を出せる。Claude Desktop等からMCP経由で同じ口座を操作し、フロントエンドの表示が反映されることを確認する。
 
