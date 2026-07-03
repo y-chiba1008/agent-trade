@@ -1,0 +1,6 @@
+[tools]
+pnpm = "latest"
+uv = "latest"
+
+[env]
+mise.file = ".env"
