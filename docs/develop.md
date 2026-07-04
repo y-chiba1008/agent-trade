@@ -17,15 +17,35 @@ agent-trade/
 └── frontend/               # React + Vite
 ```
 
+## 初回セットアップ
+
+```bash
+# リポジトリルートで
+cp .env.example .env
+# .env を開き、プレースホルダーを実際の値に置き換える（POSTGRES_* / DATABASE_URL 等）
+
+docker compose up -d db
+
+cd backend
+uv sync
+uv run alembic upgrade head
+uv run uvicorn app.main:app --reload
+```
+
+`GET http://localhost:8000/health` が `{"status":"ok","db":"connected"}` を返せば Phase 0 の環境構築は完了。
+
 ## 利用可能なスクリプト
 
 ### backend（uv）
+
+backend ディレクトリで実行:
 
 | コマンド | 説明 |
 |---|---|
 | `uv run uvicorn app.main:app --reload` | 開発サーバーを起動 |
 | `uv run pytest` | テストを実行 |
 | `uv run ruff check .` | Lintチェック |
+| `uv run mypy .` | 型チェック |
 | `uv run alembic upgrade head` | DBマイグレーションを適用 |
 
 ### frontend（pnpm）
@@ -37,11 +57,14 @@ agent-trade/
 | `pnpm lint` | ESLintでコードをチェック |
 | `pnpm preview` | ビルド結果をプレビュー |
 
-> 上記スクリプト名・内容はPhase 0実装時に確定する（[implementation_plan.md](implementation_plan.md) のPhase 0参照）。確定後は本表を実際の`pyproject.toml`/`package.json`の内容に合わせて更新する。
+> フロントエンドのスクリプトは Phase 2 で導入予定。
 
 ## 設定ファイル
 
-価格データソースのURL、ハートビート間隔等の調整可能な値は、実装時に `backend/app/config.py`（環境変数経由）にまとめる予定。詳細未確定（[implementation_plan.md](implementation_plan.md) のPhase 0/1参照）。
+バックエンドの設定は `backend/app/config.py`（環境変数経由）で読み込む。ルートの `.env` を [mise](https://mise.jdx.dev/) が読み込む構成のため、`cp .env.example .env` でルートに配置し、**手動で実際の値を設定する**（`.env.example` のプレースホルダーはそのままでは動作しない）。
+
+- `POSTGRES_*` … docker-compose 用（PostgreSQL コンテナの起動設定）
+- `DATABASE_URL` … バックエンド・Alembic 用（**必須**）。未設定の場合、サーバ起動時にエラーで停止する
 
 外部APIキー等のシークレットは環境変数で管理し、コード・DBにハードコードしない（[requirements.md](requirements.md) NFR-011）。
 
@@ -49,7 +72,7 @@ agent-trade/
 
 - バックエンド: pytest
 - フロントエンド: テストランナー未確定（Phase 2以降で導入検討）
-- テストファイルの配置: `backend/tests/features/` 配下に、対象featureと対応する構成で配置（[architecture.md](architecture.md) 参照）
+- テストファイルの配置: `backend/tests/` 配下（Phase 1 以降は `tests/features/` に feature 対応構成を追加）
 
 ## コーディング規約
 
