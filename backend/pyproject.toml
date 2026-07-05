@@ -24,3 +24,13 @@ dev = [
     "mypy",
     "ruff",
 ]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.12"
+packages = ["app"]
+plugins = ["sqlalchemy.ext.mypy.plugin"]
+ignore_missing_imports = true
