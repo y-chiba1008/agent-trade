@@ -12,11 +12,11 @@
 
 **ゴール**: バックエンド（FastAPI）が起動し、PostgreSQLに接続でき、最低限のヘルスチェックAPIが動く状態。
 
-- [ ] Python仮想環境・依存関係管理のセットアップ（poetry / uv 等、お好みのツール）
-- [ ] FastAPIの最小構成（`GET /health` 等）
-- [ ] PostgreSQLのセットアップ（ローカルDocker等）
-- [ ] DBマイグレーションツールの選定・導入（Alembic推奨）
-- [ ] Alembicのマイグレーションパス設定を、ディレクトリ構成（`db/migrations/`）に合わせて調整する
+- [x] Python仮想環境・依存関係管理のセットアップ（poetry / uv 等、お好みのツール）
+- [x] FastAPIの最小構成（`GET /health` 等）
+- [x] PostgreSQLのセットアップ（ローカルDocker等）
+- [x] DBマイグレーションツールの選定・導入（Alembic推奨）
+- [x] Alembicのマイグレーションパス設定を、ディレクトリ構成（`db/migrations/`）に合わせて調整する
 
 プロジェクトのディレクトリ構成（usecase層・WebAPI層・MCP層の分離、backend/frontend両方）は決定済み。詳細は [`docs/architecture.md`](./architecture.md) を参照。
 
