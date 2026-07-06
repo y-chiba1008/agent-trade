@@ -44,7 +44,7 @@ export function AccountDetailPage() {
         <p className="text-sm text-destructive">
           口座 ID {accountId} が見つかりません。
         </p>
-        <Button variant="outline" render={<Link to="/" />}>
+        <Button variant="outline" nativeButton={false} render={<Link to="/" />}>
           口座一覧に戻る
         </Button>
       </div>
@@ -60,7 +60,7 @@ export function AccountDetailPage() {
             口座 ID: {account.id} / 作成: {formatDateTime(account.created_at)}
           </p>
         </div>
-        <Button variant="outline" render={<Link to="/" />}>
+        <Button variant="outline" nativeButton={false} render={<Link to="/" />}>
           口座一覧に戻る
         </Button>
       </div>

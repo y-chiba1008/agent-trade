@@ -93,7 +93,12 @@ export function AccountListPage() {
                     <TableCell>{formatDateTime(account.created_at)}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <Button variant="outline" size="sm" render={<Link to={`/accounts/${account.id}`} />}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          nativeButton={false}
+                          render={<Link to={`/accounts/${account.id}`} />}
+                        >
                           詳細
                         </Button>
                         <AlertDialog>
