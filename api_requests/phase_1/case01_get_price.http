@@ -1,0 +1,2 @@
+### get price
+GET http://localhost:8000/price/BTC_JPY

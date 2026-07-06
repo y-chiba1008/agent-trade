@@ -1,0 +1,19 @@
+### create account
+# @name signup
+POST http://localhost:8000/accounts
+Content-Type: application/json
+
+{
+    "name":"test-1",
+    "account_tag":"human",
+    "initial_jpy_balance":1000000
+}
+
+### create order
+POST http://localhost:8000/accounts/{{signup.response.body.id}}/orders
+Content-Type: application/json
+
+{
+    "side": "buy",
+    "quantity": "0.001"
+}
