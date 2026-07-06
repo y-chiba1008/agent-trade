@@ -1,0 +1,10 @@
+@user_id=1234567890
+
+### order by unknown account
+POST http://localhost:8000/accounts/{{user_id}}/orders
+Content-Type: application/json
+
+{
+    "side": "buy",
+    "quantity": "1"
+}
