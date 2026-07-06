@@ -1,4 +1,5 @@
-from collections.abc import AsyncGenerator, Generator
+import asyncio
+from collections.abc import Generator
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -28,7 +29,7 @@ def client(fake_price_adapter: FakePriceSourceAdapter) -> Generator[TestClient, 
 
 
 @pytest.fixture(autouse=True)
-async def reset_db_engine() -> AsyncGenerator[None, None]:
-    await dispose_engine()
+def reset_db_engine() -> Generator[None, None, None]:
+    asyncio.run(dispose_engine())
     yield
-    await dispose_engine()
+    asyncio.run(dispose_engine())
