@@ -1,2 +1,7 @@
+# Environment files (secrets and mode-specific overrides)
 .env*
-!.env.example
+**/.env.local
+
+# Env templates only (safe to commit)
+!/.env.example
+!/frontend/.env.example

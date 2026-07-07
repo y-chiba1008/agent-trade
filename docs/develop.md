@@ -20,9 +20,17 @@ agent-trade/
 ## 初回セットアップ
 
 ```bash
-# リポジトリルートで
+# 環境変数の設定
+## バックエンド・DB用
 cp .env.example .env
 # .env を開き、プレースホルダーを実際の値に置き換える（POSTGRES_* / DATABASE_URL 等）
+
+## フロントエンド用
+cd frontend
+cp .env.example .env.development
+cp .env.example .env.production
+# 各ファイルの値を環境に合わせて設定する（詳細は「環境変数」節を参照）
+cd ..
 
 docker compose up -d db
 
@@ -32,7 +40,15 @@ uv run alembic upgrade head
 uv run uvicorn app.main:app --reload
 ```
 
-`GET http://localhost:8000/health` が `{"status":"ok","db":"connected"}` を返せば Phase 0 の環境構築は完了。
+別ターミナルでフロントエンドを起動する:
+
+```bash
+cd frontend
+pnpm install   # 初回のみ
+pnpm dev
+```
+
+`GET http://localhost:8000/health` が `{"status":"ok","db":"connected"}` を返せば Phase 0 の環境構築は完了。`http://localhost:5173` でフロントエンドが表示されれば Phase 2 の UI も利用可能。
 
 ## 利用可能なスクリプト
 
@@ -57,16 +73,71 @@ backend ディレクトリで実行:
 | `pnpm lint` | ESLintでコードをチェック |
 | `pnpm preview` | ビルド結果をプレビュー |
 
-> フロントエンドのスクリプトは Phase 2 で導入予定。
+## 環境変数
+
+環境変数は**ルート**（バックエンド・DB）と**フロントエンド**でファイルを分けて管理する。いずれもシークレットやローカル固有の値を含むため、原則として git にはコミットしない（テンプレートの `.env.example` のみコミット対象）。
+
+### ファイル一覧
+
+| ファイル | git | 用途 |
+|---|---|---|
+| `/.env` | 無視 | ルート設定の実値（DB 接続情報など） |
+| `/.env.example` | コミット | ルート設定のテンプレート |
+| `/frontend/.env.development` | 無視 | `pnpm dev` 用（development モード） |
+| `/frontend/.env.production` | 無視 | `pnpm build` / `pnpm preview` 用（production モード） |
+| `/frontend/.env.example` | コミット | フロントエンド設定のテンプレート |
+| `**/.env.local` | 無視 | 個人の上書き用（任意） |
+
+git の除外ルールはルート [`.gitignore`](../.gitignore) で定義している。
+
+### ルート `.env`（バックエンド・DB・mise）
+
+[mise](https://mise.jdx.dev/) の [`mise.toml`](../mise.toml) が `mise.file = ".env"` を指定しており、プロジェクトディレクトリではルート `.env` がシェル環境に読み込まれる。
+
+バックエンドは [`backend/app/config.py`](../backend/app/config.py)（pydantic-settings）経由で `.env` および `../.env` を参照する。docker compose もルート `.env` の `POSTGRES_*` を使用する。
+
+| 変数 | 説明 |
+|---|---|
+| `POSTGRES_*` | docker-compose 用（PostgreSQL コンテナの起動設定） |
+| `ADMINER_PORT` | Adminer のホスト側ポート |
+| `DATABASE_URL` | バックエンド・Alembic 用（**必須**）。未設定の場合、サーバ起動時にエラーで停止する |
+
+セットアップ: `cp .env.example .env` のあと、プレースホルダーを実際の値に置き換える。
+
+### フロントエンド `.env.*`（Vite）
+
+Vite は `frontend/` 配下の `.env.[mode]` をモードに応じて読み込む。`VITE_` プレフィックス付きの変数のみクライアントコード（`import.meta.env`）に公開される。
+
+| コマンド | モード | 読み込まれるファイル |
+|---|---|---|
+| `pnpm dev` | `development` | `.env.development`（および `.env`、`.env.local` 等） |
+| `pnpm build` | `production` | `.env.production` |
+| `pnpm preview` | — | **ビルド時**に `.env.production` の値が JS に埋め込まれる（実行時には再読み込みしない） |
+
+セットアップ: `frontend/.env.example` をコピーして `.env.development` と `.env.production` を作成する。
+
+| 変数 | 説明 |
+|---|---|
+| `VITE_API_BASE_URL` | API クライアントのベース URL（[`frontend/src/api/client.ts`](../frontend/src/api/client.ts)）。未設定時は `/api` |
+
+**推奨値（ローカル開発）:**
+
+| ファイル | `VITE_API_BASE_URL` | 理由 |
+|---|---|---|
+| `.env.development` | `/api` | Vite dev server の proxy（[`frontend/vite.config.ts`](../frontend/vite.config.ts)）経由でバックエンドへ中継。同一オリジンのため CORS 不要 |
+| `.env.production` | `http://localhost:8000` | `pnpm preview` 時は proxy が無いためバックエンドへ直接接続。バックエンドの CORS 設定が必要 |
+
+`pnpm build` 後に `.env.production` を変更した場合は、値を反映するために `pnpm build` を再実行する。
+
+**注意:** `VITE_` 変数はビルド成果物に含まれる。シークレット（API キー、DB 接続文字列など）は `VITE_` 変数にしないこと。
+
+### セキュリティ
+
+外部 API キー等のシークレットは環境変数で管理し、コード・DB にハードコードしない（[requirements.md](requirements.md) NFR-011）。
 
 ## 設定ファイル
 
-バックエンドの設定は `backend/app/config.py`（環境変数経由）で読み込む。ルートの `.env` を [mise](https://mise.jdx.dev/) が読み込む構成のため、`cp .env.example .env` でルートに配置し、**手動で実際の値を設定する**（`.env.example` のプレースホルダーはそのままでは動作しない）。
-
-- `POSTGRES_*` … docker-compose 用（PostgreSQL コンテナの起動設定）
-- `DATABASE_URL` … バックエンド・Alembic 用（**必須**）。未設定の場合、サーバ起動時にエラーで停止する
-
-外部APIキー等のシークレットは環境変数で管理し、コード・DBにハードコードしない（[requirements.md](requirements.md) NFR-011）。
+上記「環境変数」節を参照。バックエンドの設定読み込み実装は `backend/app/config.py`。
 
 ## テスト
 
