@@ -7,6 +7,9 @@ agent-trade/
   docs/
   backend/
   frontend/
+  .env.example          # ルート設定テンプレート（git 管理）
+  .env                  # ルート設定の実値（git 無視・ローカルで作成）
+  mise.toml
 ```
 
 ## 2. 設計思想
@@ -146,8 +149,9 @@ backend/
       price/
   pyproject.toml
   alembic.ini
-  .env.example
 ```
+
+ルートの `.env` / `.env.example` はモノレポ直下で管理する（「8. 既知の注意点」参照）。
 
 ## 7. フロントエンドディレクトリ構成
 
@@ -203,11 +207,14 @@ frontend/
   vite.config.ts
   tsconfig.json
   package.json
-  .env.example
+  .env.example          # テンプレート（git 管理）
+  .env.development      # pnpm dev 用（git 無視・ローカルで作成）
+  .env.production       # pnpm build 用（git 無視・ローカルで作成）
 ```
 
 ## 8. 既知の注意点・未決事項
 
+- **環境変数ファイルの配置**: バックエンド・DB 用はモノレポルートの `.env`（mise / docker-compose / pydantic-settings が参照）。フロントエンド用は `frontend/.env.development` / `.env.production`（Vite がモード別に読み込み）。git には `.env.example` テンプレートのみコミットする。詳細は [develop.md](develop.md) の「環境変数」節を参照。
 - **`api/`の名称の重複**: バックエンドの`api/`は「WebAPIのルーター（提供側）」、フロントエンドの`api/`は「APIクライアント（呼び出し側）」を指す。同名だが役割が異なる点に注意する。
 - **Alembicのパス設定**: `db/migrations/`をリポジトリ構成に合わせて配置する際、`alembic.ini`内のパス設定を調整する必要がある（Phase 0の作業項目として追加予定）。
 - **`order`機能の肥大化対応**: Phase 4でOCO/IFD注文を追加する際、注文間の関連性（親子関係・グルーピング）を`order`配下に置くか、別機能として切り出すかは現時点では未決定。実装時に再検討する。

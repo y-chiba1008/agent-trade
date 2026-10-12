@@ -69,15 +69,15 @@
 
 ディレクトリ構成（Package by Feature、命名規則）は決定済み。詳細は `[docs/architecture.md](./architecture.md)` を参照。
 
-- [ ] Vite + React のプロジェクトセットアップ
-- [ ] shadcn/ui の導入（base UIコンポーネント）
-- [ ] TanStack Query の導入・APIクライアントのセットアップ
-- [ ] Zustand によるクライアント側状態管理のセットアップ（必要なローカル状態が出てきた時点で導入でも可）
-- [ ] React Router によるページ構成（口座一覧・口座詳細など）
-- [ ] 現在価格の表示（ポーリングまたはWebSocket購読）
-- [ ] 口座一覧・作成・削除のUI
-- [ ] 成行注文を出すUI（React Hook Form + Zod でバリデーション。買い/売り、数量入力）
-- [ ] 注文・約定履歴の簡易表示
+- [x] Vite + React のプロジェクトセットアップ
+- [x] shadcn/ui の導入（base UIコンポーネント）
+- [x] TanStack Query の導入・APIクライアントのセットアップ
+- [x] Zustand によるクライアント側状態管理のセットアップ（必要なローカル状態が出てきた時点で導入でも可）
+- [x] React Router によるページ構成（口座一覧・口座詳細など）
+- [x] 現在価格の表示（ポーリングまたはWebSocket購読）
+- [x] 口座一覧・作成・削除のUI
+- [x] 成行注文を出すUI（React Hook Form + Zod でバリデーション。買い/売り、数量入力）
+- [x] 注文・約定履歴の簡易表示
 
 
 
