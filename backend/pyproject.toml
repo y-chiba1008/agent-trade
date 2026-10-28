@@ -17,6 +17,18 @@ dependencies = [
     "httpx",
 ]
 
+[project.scripts]
+dev = "app.commands:dev"
+lint = "app.commands:lint"
+
+[build-system]
+requires = ["uv_build>=0.11.25,<0.12"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "app"
+module-root = ""
+
 [dependency-groups]
 dev = [
     "pytest",

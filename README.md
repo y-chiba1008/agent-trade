@@ -12,7 +12,7 @@ docker compose up -d db
 cd backend
 uv sync
 uv run alembic upgrade head
-uv run uvicorn app.main:app --reload
+uv run dev
 ```
 
 ヘルスチェック:
