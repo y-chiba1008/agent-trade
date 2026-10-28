@@ -37,7 +37,7 @@ docker compose up -d db
 cd backend
 uv sync
 uv run alembic upgrade head
-uv run uvicorn app.main:app --reload
+uv run dev
 ```
 
 別ターミナルでフロントエンドを起動する:
@@ -58,9 +58,9 @@ backend ディレクトリで実行:
 
 | コマンド | 説明 |
 |---|---|
-| `uv run uvicorn app.main:app --reload` | 開発サーバーを起動 |
+| `uv run dev` | 開発サーバーを起動 |
+| `uv run lint` | Lintチェック（`ruff check .`） |
 | `uv run pytest` | テストを実行 |
-| `uv run ruff check .` | Lintチェック |
 | `uv run mypy .` | 型チェック |
 | `uv run alembic upgrade head` | DBマイグレーションを適用 |
 

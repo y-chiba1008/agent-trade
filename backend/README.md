@@ -25,7 +25,7 @@ uv run alembic upgrade head
 
 ```bash
 cd backend
-uv run uvicorn app.main:app --reload
+uv run dev
 ```
 
 `GET http://localhost:8000/health` で `{"status":"ok","db":"connected"}` が返れば正常。
@@ -34,7 +34,7 @@ uv run uvicorn app.main:app --reload
 
 ```bash
 cd backend
-uv run ruff check .
+uv run lint
 uv run mypy .
 uv run pytest
 ```

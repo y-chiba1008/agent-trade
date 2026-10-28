@@ -46,7 +46,7 @@
 
 ### backend
 
-- `uv run ruff check .` でLintエラーがないことを確認する
+- `uv run lint` でLintエラーがないことを確認する
 - `uv run mypy .` で型エラーがないことを確認する
 - `uv run pytest` でテストが通ることを確認する
 
